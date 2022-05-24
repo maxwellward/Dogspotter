@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const {
-	doc, setDoc,
+	doc, updateDoc,
 } = require('firebase/firestore');
 
 const { db } = require('../util/initFirebase');
@@ -36,7 +36,7 @@ function verifyNameMatch(interaction) {
 
 function resetScore(interaction) {
 	const user = interaction.options._hoistedOptions[0].user.id;
-	setDoc(doc(db, 'users', user), {
+	updateDoc(doc(db, 'users', user), {
 		points: 0,
 	})
 		.then(() => {
