@@ -34,6 +34,10 @@ module.exports = {
 						name: 'subtract',
 						value: 'subtract',
 					},
+					{
+						name: 'set',
+						value: 'set',
+					},
 				),
 		),
 	async execute(interaction) {
@@ -65,21 +69,32 @@ function modifyScore(options) {
 
 function applyUpdate(user, scoreToChange, currentScore, modifier) {
 	let score;
-	if (modifier == 'add') {
+	switch (modifier) {
+	case 'add':
 		score = currentScore + scoreToChange;
-	}
-	else if (modifier == 'subtract') {
+		break;
+	case 'subtract':
 		score = currentScore - scoreToChange;
+		break;
+	case 'set':
+		score = scoreToChange;
+		break;
 	}
+
 	const docRef = doc(db, 'users', user);
 	setDoc(docRef, {
 		points: score,
 	}).then(() => {
-		if (modifier == 'add') {
+		switch (modifier) {
+		case 'add':
 			action.reply(`Added ${scoreToChange} points to <@${user}>'s score. New score: ${score}`);
-		}
-		else if (modifier == 'subtract') {
+			break;
+		case 'subtract':
 			action.reply(`Subtracted ${scoreToChange} points from <@${user}>'s score. New score: ${score}`);
+			break;
+		case 'set':
+			action.reply(`Set <@${user}>'s score to ${score}`);
+			break;
 		}
 	})
 		.catch(() => {
