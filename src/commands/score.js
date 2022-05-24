@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-
 const {
-	doc,
-	setDoc, getDoc,
+	doc, setDoc, getDoc,
 } = require('firebase/firestore');
+
+const { db } = require('../util/initFirebase');
 
 let action;
 

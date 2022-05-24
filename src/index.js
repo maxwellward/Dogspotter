@@ -34,14 +34,6 @@ for (const file of commandFiles) {
 	client.commands.set(command.data.name, command);
 }
 
-const firebaseConfig = require('../firebase.json');
-const { initializeApp } = require('firebase/app');
-const { getFirestore } = require('firebase/firestore')
-
-initializeApp(firebaseConfig);
-const db = getFirestore();
-
 client.login(process.env.TOKEN);
 
-exports.db = db;
 exports.client = client.commands;
