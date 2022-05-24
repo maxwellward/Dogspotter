@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const {
-	doc, updateDoc,
+	doc, updateDoc, getDoc,
 } = require('firebase/firestore');
-
 const { db } = require('../util/initFirebase');
+const { addPointsHistory } = require('../util/historyKeeper');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -21,7 +21,7 @@ module.exports = {
 		),
 	async execute(interaction) {
 		if (verifyNameMatch(interaction)) {
-			resetScore(interaction);
+			getCurrentScore(interaction);
 		}
 		else {
 			interaction.reply({ content: 'The two users provided do not match! Please try again.', ephemeral: true });
@@ -34,15 +34,30 @@ function verifyNameMatch(interaction) {
 	return options[0].user.id == options[1].user.id;
 }
 
-function resetScore(interaction) {
+function getCurrentScore(interaction) {
 	const user = interaction.options._hoistedOptions[0].user.id;
-	updateDoc(doc(db, 'users', user), {
+	const docRef = doc(db, 'users', user);
+	getDoc(docRef)
+		.then((document) => {
+			const currentPoints = document.data().points;
+			resetScore(interaction, user, currentPoints);
+		})
+		.catch((e) => {
+			console.log(e);
+		});
+}
+
+function resetScore(interaction, user, currentPoints) {
+	const docRef = doc(db, 'users', user);
+	updateDoc(docRef, {
 		points: 0,
 	})
 		.then(() => {
+			addPointsHistory(user, interaction.user.id, 'reset', currentPoints, 0);
 			interaction.reply({ content: `Successfully reset <@${user}>'s score to 0.`, ephemeral: true });
 		})
-		.catch(() => {
+		.catch((e) => {
 			interaction.reply({ content: 'Something went wrong while trying to perform this action.', ephemeral: true });
+			console.log(e);
 		});
 }

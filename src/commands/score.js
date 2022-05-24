@@ -60,21 +60,21 @@ function modifyScore(options) {
 	const docRef = doc(db, 'users', user);
 	getDoc(docRef)
 		.then((document) => {
-			let currentScore;
-			if (document.data() == undefined) { currentScore = 0; }
-			else { currentScore = document.data().points; }
-			applyUpdate(user, score, currentScore, modifier);
+			let currentPoints;
+			if (document.data() == undefined) { currentPoints = 0; }
+			else { currentPoints = document.data().points; }
+			applyUpdate(user, score, currentPoints, modifier);
 		});
 }
 
-function applyUpdate(user, scoreToChange, currentScore, modifier) {
+function applyUpdate(user, scoreToChange, currentPoints, modifier) {
 	let score;
 	switch (modifier) {
 	case 'add':
-		score = currentScore + scoreToChange;
+		score = currentPoints + scoreToChange;
 		break;
 	case 'subtract':
-		score = currentScore - scoreToChange;
+		score = currentPoints - scoreToChange;
 		break;
 	case 'set':
 		score = scoreToChange;
@@ -85,7 +85,7 @@ function applyUpdate(user, scoreToChange, currentScore, modifier) {
 	updateDoc(docRef, {
 		points: score,
 	}).then(() => {
-		addPointsHistory(user, action.user.id, modifier, currentScore, score);
+		addPointsHistory(user, action.user.id, modifier, currentPoints, score);
 		switch (modifier) {
 		case 'add':
 			action.reply(`Added ${scoreToChange} points to <@${user}>'s score. New score: ${score}`);
@@ -98,7 +98,8 @@ function applyUpdate(user, scoreToChange, currentScore, modifier) {
 			break;
 		}
 	})
-		.catch(() => {
+		.catch((e) => {
 			action.reply({ content: 'Something went wrong while trying to perform this action.', ephemeral: true });
+			console.log(e);
 		});
 }
