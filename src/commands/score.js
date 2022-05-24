@@ -42,11 +42,11 @@ module.exports = {
 		),
 	async execute(interaction) {
 		action = interaction;
-		await modifyScore(interaction.options._hoistedOptions);
+		modifyScore(interaction.options._hoistedOptions);
 	},
 };
 
-async function modifyScore(options) {
+function modifyScore(options) {
 	const user = options[0].user.id;
 	const score = options[1].value;
 	let modifier;
