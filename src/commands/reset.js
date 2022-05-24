@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const {
-	doc, deleteDoc,
+	doc, setDoc,
 } = require('firebase/firestore');
 
 const { db } = require('../util/initFirebase');
@@ -24,7 +24,7 @@ module.exports = {
 			resetScore(interaction);
 		}
 		else {
-			await interaction.reply({ content: 'The two users provided do not match! Please try again.', ephemeral: true });
+			interaction.reply({ content: 'The two users provided do not match! Please try again.', ephemeral: true });
 		}
 	},
 };
@@ -35,5 +35,11 @@ function verifyNameMatch(interaction) {
 }
 
 function resetScore(interaction) {
-	console.log('Reset');
+	const user = interaction.options._hoistedOptions[0].user.id;
+	setDoc(doc(db, 'users', user), {
+		points: 0,
+	})
+		.then(() => {
+			interaction.reply({ content: `Successfully reset <@${user}>'s score to 0.`, ephemeral: true });
+		});
 }
