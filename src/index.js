@@ -1,4 +1,4 @@
-const { Client, Intents } = require('discord.js');
+const { Client, Collection, Intents } = require('discord.js');
 const path = require('path');
 const fs = require('fs');
 require('dotenv').config({ path: '../.env' });
@@ -24,4 +24,16 @@ for (const file of eventFiles) {
 	}
 }
 
+client.commands = new Collection();
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+	const filePath = path.join(commandsPath, file);
+	const command = require(filePath);
+	client.commands.set(command.data.name, command);
+}
+
 client.login(process.env.TOKEN);
+
+exports.client = client.commands;

@@ -4,12 +4,14 @@ module.exports = {
 	name: 'messageCreate',
 	execute(message) {
 		if (message.channelId != process.env.DOGSPOTTER_CHANNEL) { return; }
-		checkIfImage(message);
+		checkIfValid(message);
 	},
 };
 
-function checkIfImage(message) {
-	if (message.attachments.size == 0) {
+function checkIfValid(message) {
+	if (message.attachments.size == 0 && message.author.id != process.env.CLIENT_ID) {
 		message.delete();
+		return false;
 	}
+	return true;
 }
