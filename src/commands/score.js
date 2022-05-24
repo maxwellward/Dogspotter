@@ -81,5 +81,8 @@ function applyUpdate(user, scoreToChange, currentScore, modifier) {
 		else if (modifier == 'subtract') {
 			action.reply(`Subtracted ${scoreToChange} points from <@${user}>'s score. New score: ${score}`);
 		}
-	});
+	})
+		.catch(() => {
+			action.reply({ content: 'Something went wrong while trying to perform this action.', ephemeral: true });
+		});
 }

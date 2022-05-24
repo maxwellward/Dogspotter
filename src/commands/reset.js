@@ -41,5 +41,8 @@ function resetScore(interaction) {
 	})
 		.then(() => {
 			interaction.reply({ content: `Successfully reset <@${user}>'s score to 0.`, ephemeral: true });
+		})
+		.catch(() => {
+			interaction.reply({ content: 'Something went wrong while trying to perform this action.', ephemeral: true });
 		});
 }
