@@ -4,7 +4,7 @@ const {
 
 const { db } = require('../util/initFirebase');
 
-function addPointsHistory(user, issuer, action, oldValue, newValue) {
+function addScoreistory(user, issuer, action, scoreChange) {
 	const docRef = doc(db, 'users', user);
 
 	updateDoc(docRef, {
@@ -12,8 +12,7 @@ function addPointsHistory(user, issuer, action, oldValue, newValue) {
 			timestamp: Math.floor(+new Date() / 1000),
 			issuer,
 			action,
-			old: oldValue,
-			new: newValue,
+			scoreChange,
 		}),
 	})
 		.catch((e) => {
@@ -21,4 +20,4 @@ function addPointsHistory(user, issuer, action, oldValue, newValue) {
 		});
 }
 
-exports.addPointsHistory = addPointsHistory;
+exports.addScoreHistory = addScoreistory;

@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const {
-	doc, updateDoc, getDoc,
+	doc, updateDoc, increment,
 } = require('firebase/firestore');
 const { db } = require('../util/initFirebase');
-const { addPointsHistory } = require('../util/historyKeeper');
+const { addScoreHistory } = require('../util/historyKeeper');
 
 let action;
 
@@ -42,13 +42,13 @@ module.exports = {
 		),
 	async execute(interaction) {
 		action = interaction;
-		modifyScore(interaction.options._hoistedOptions);
+		applyUpdate(interaction.options._hoistedOptions);
 	},
 };
 
-function modifyScore(options) {
+function applyUpdate(options) {
 	const user = options[0].user.id;
-	const score = options[1].value;
+	let score = options[1].value;
 	let modifier;
 	try {
 		modifier = options[2].value;
@@ -57,41 +57,21 @@ function modifyScore(options) {
 		modifier = 'add';
 	}
 
-	const docRef = doc(db, 'users', user);
-	getDoc(docRef)
-		.then((document) => {
-			let currentPoints;
-			if (document.data() == undefined) { currentPoints = 0; }
-			else { currentPoints = document.data().points; }
-			applyUpdate(user, score, currentPoints, modifier);
-		});
-}
-
-function applyUpdate(user, scoreToChange, currentPoints, modifier) {
-	let score;
-	switch (modifier) {
-	case 'add':
-		score = currentPoints + scoreToChange;
-		break;
-	case 'subtract':
-		score = currentPoints - scoreToChange;
-		break;
-	case 'set':
-		score = scoreToChange;
-		break;
+	if (modifier == 'subtract') {
+		score = -Math.abs(score);
 	}
 
 	const docRef = doc(db, 'users', user);
 	updateDoc(docRef, {
-		points: score,
+		points: ((modifier == 'set') ? score : increment(score)),
 	}).then(() => {
-		addPointsHistory(user, action.user.id, modifier, currentPoints, score);
+		addScoreHistory(user, action.user.id, modifier, score);
 		switch (modifier) {
 		case 'add':
-			action.reply(`Added ${scoreToChange} points to <@${user}>'s score. New score: ${score}`);
+			action.reply(`Added ${score} points to <@${user}>'s score.`);
 			break;
 		case 'subtract':
-			action.reply(`Subtracted ${scoreToChange} points from <@${user}>'s score. New score: ${score}`);
+			action.reply(`Subtracted ${Math.abs(score)} points from <@${user}>'s score.`);
 			break;
 		case 'set':
 			action.reply(`Set <@${user}>'s score to ${score}`);
