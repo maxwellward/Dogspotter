@@ -4,6 +4,7 @@ const {
 } = require('firebase/firestore');
 const { db } = require('../util/initFirebase');
 const { addScoreHistory } = require('../util/historyKeeper');
+const { POINT_MULTIPLIER } = require('../../config.json');
 
 let action;
 
@@ -60,6 +61,17 @@ function applyUpdate(options) {
 	if (modifier == 'subtract') {
 		score = -Math.abs(score);
 	}
+	else if (modifier == 'add') {
+		let multiplier = 1;
+		try {
+			multiplier = parseInt(POINT_MULTIPLIER.value);
+		}
+		catch (error) {
+			action.reply({ content: 'Could not parse point multiplier to a number. Please check the config.', ephemeral: true });
+			return;
+		}
+		score = (score * multiplier);
+	}
 
 	const docRef = doc(db, 'users', user);
 	setDoc(
@@ -68,9 +80,15 @@ function applyUpdate(options) {
 		{ merge: true },
 	).then(() => {
 		addScoreHistory(user, action.user.id, modifier, score);
+		const multiplier = Math.round(POINT_MULTIPLIER.value);
 		switch (modifier) {
 		case 'add':
-			action.reply(`Added ${score} points to <@${user}>'s score.`);
+			if (multiplier != 1) {
+				action.reply(`Added ${score * multiplier} points to <@${user}>'s score (${multiplier}x point multiplier).`);
+			}
+			else {
+				action.reply(`Added ${score} points to <@${user}>'s score.`);
+			}
 			break;
 		case 'subtract':
 			action.reply(`Subtracted ${Math.abs(score)} points from <@${user}>'s score.`);
