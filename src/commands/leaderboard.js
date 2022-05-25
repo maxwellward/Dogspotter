@@ -4,6 +4,8 @@ const {
 	query, orderBy, limit, collection, getDocs,
 } = require('firebase/firestore');
 const { db } = require('../util/initFirebase');
+const client = require('../index');
+const { getOrdinalNum, getMonthWord } = require('../util/date');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -32,14 +34,22 @@ async function calculateLeaderboard(interaction) {
 }
 
 function buildEmbed(interaction, topUsers) {
+	const date = new Date();
+	const friendlyDate = `Leaderboard as of ${getMonthWord(date.getMonth())} ${getOrdinalNum(date.getDate())}`;
+
 	const embed = new MessageEmbed()
 		.setTitle('Top Dogspotters')
 		.setDescription('Who\'s seen the most good doggos?')
-		.setFooter({ text: 'Foot' });
+		.setFooter({ text: friendlyDate });
 
-	topUsers.forEach(user => {
-		embed.addField(`<@${user.id}>`, (user.points).toString());
+	new Promise((resolve) => {
+		topUsers.forEach(user => {
+			client.client.users.fetch(user.id).then((userObject) => {
+				embed.addField(`${userObject.username}#${userObject.discriminator}`, (user.points).toString());
+			});
+		});
+		resolve();
+	}).then(() => {
+		interaction.reply({ embeds: [embed] });
 	});
-
-	interaction.reply({ embeds: [embed] });
 }
