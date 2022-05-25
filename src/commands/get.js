@@ -3,7 +3,6 @@ const {
 	doc, getDoc,
 } = require('firebase/firestore');
 const { db } = require('../util/initFirebase');
-const client = require('../client');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -21,15 +20,15 @@ module.exports = {
 };
 
 const getScore = (interaction, user) => {
-	const id = user.id;
+	const id = user.value;
 	const docRef = doc(db, 'users', id);
 	new Promise((resolve) => {
 		getDoc(docRef).then((document) => {
-			resolve(document.data().score);
+			resolve(document.data().points);
 		});
 	}).then((score) => {
 		let plural = 'points';
 		if (score == 1) { plural = 'point'; }
-		interaction.reply(`${client.users.fetch(id).username} has ${score} ${plural}`);
+		interaction.reply(`${user.user.username} has ${score} ${plural}`);
 	});
 };
