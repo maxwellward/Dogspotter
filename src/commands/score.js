@@ -82,6 +82,6 @@ function applyUpdate(options) {
 	})
 		.catch((e) => {
 			action.reply({ content: 'Something went wrong while trying to perform this action.', ephemeral: true });
-			console.log(e);
+			console.error(e);
 		});
 }

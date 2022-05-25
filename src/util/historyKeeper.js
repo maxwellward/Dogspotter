@@ -16,7 +16,7 @@ function addScoreistory(user, issuer, action, scoreChange) {
 		}),
 	})
 		.catch((e) => {
-			console.log(e);
+			console.error(e);
 		});
 }
 

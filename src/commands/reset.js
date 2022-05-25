@@ -47,6 +47,6 @@ function resetScore(interaction) {
 		})
 		.catch((e) => {
 			interaction.reply({ content: 'Something went wrong while trying to perform this action.', ephemeral: true });
-			console.log(e);
+			console.error(e);
 		});
 }

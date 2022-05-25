@@ -4,7 +4,7 @@ const {
 	query, orderBy, limit, collection, getDocs,
 } = require('firebase/firestore');
 const { db } = require('../util/initFirebase');
-const client = require('../index');
+const client = require('../client');
 const { getOrdinalNum, getMonthWord } = require('../util/date');
 
 module.exports = {
@@ -44,7 +44,7 @@ function buildEmbed(interaction, topUsers) {
 
 	new Promise((resolve) => {
 		topUsers.forEach(user => {
-			client.client.users.fetch(user.id).then((userObject) => {
+			client.users.fetch(user.id).then((userObject) => {
 				embed.addField(`${userObject.username}#${userObject.discriminator}`, (user.points).toString());
 			});
 		});
