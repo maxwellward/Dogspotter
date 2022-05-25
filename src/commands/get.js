@@ -11,16 +11,26 @@ module.exports = {
 		.addMentionableOption(option =>
 			option.setName('user')
 				.setDescription('The user to query')
-				.setRequired(true),
+				.setRequired(false),
 		),
 	async execute(interaction) {
-		const user = interaction.options._hoistedOptions[0];
-		getScore(interaction, user);
+		let username;
+		let id;
+
+		if (interaction.options._hoistedOptions.length == 0) {
+			username = interaction.user.username;
+			id = interaction.user.id;
+		}
+		else {
+			const user = interaction.options._hoistedOptions[0];
+			username = user.user.username;
+			id = user.user.id;
+		}
+		getScore(interaction, username, id);
 	},
 };
 
-const getScore = (interaction, user) => {
-	const id = user.value;
+const getScore = (interaction, username, id) => {
 	const docRef = doc(db, 'users', id);
 	new Promise((resolve) => {
 		getDoc(docRef).then((document) => {
@@ -29,6 +39,6 @@ const getScore = (interaction, user) => {
 	}).then((score) => {
 		let plural = 'points';
 		if (score == 1) { plural = 'point'; }
-		interaction.reply(`${user.user.username} has ${score} ${plural}`);
+		interaction.reply(`${username} has ${score} ${plural}`);
 	});
 };
