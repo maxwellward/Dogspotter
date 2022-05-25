@@ -36,4 +36,4 @@ for (const file of commandFiles) {
 
 client.login(process.env.TOKEN);
 
-exports.client = client.commands;
+exports.client = client;

@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const {
-	doc, updateDoc, increment,
+	doc, setDoc, increment,
 } = require('firebase/firestore');
 const { db } = require('../util/initFirebase');
 const { addScoreHistory } = require('../util/historyKeeper');
@@ -62,9 +62,11 @@ function applyUpdate(options) {
 	}
 
 	const docRef = doc(db, 'users', user);
-	updateDoc(docRef, {
-		points: ((modifier == 'set') ? score : increment(score)),
-	}).then(() => {
+	setDoc(
+		docRef,
+		{ points: ((modifier == 'set') ? score : increment(score)) },
+		{ merge: true },
+	).then(() => {
 		addScoreHistory(user, action.user.id, modifier, score);
 		switch (modifier) {
 		case 'add':

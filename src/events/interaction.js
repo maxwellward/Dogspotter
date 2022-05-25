@@ -1,10 +1,10 @@
-const commands = require('../index.js');
+const index = require('../index.js');
 module.exports = {
 	name: 'interactionCreate',
 	async execute(interaction) {
 		if (!interaction.isCommand()) return;
 
-		const command = commands.client.get(interaction.commandName);
+		const command = index.client.commands.get(interaction.commandName);
 
 		if (!command) return;
 

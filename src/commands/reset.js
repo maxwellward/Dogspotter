@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const {
-	doc, updateDoc,
+	doc, setDoc,
 } = require('firebase/firestore');
 const { db } = require('../util/initFirebase');
 const { addScoreHistory } = require('../util/historyKeeper');
@@ -36,11 +36,11 @@ function verifyNameMatch(interaction) {
 
 function resetScore(interaction) {
 	const user = interaction.options._hoistedOptions[0].user.id;
-	console.log(user);
 	const docRef = doc(db, 'users', user);
-	updateDoc(docRef, {
-		points: 0,
-	})
+	setDoc(docRef,
+		{ points: 0 },
+		{ merge: true },
+	)
 		.then(() => {
 			addScoreHistory(user, interaction.user.id, 'reset', 'N/A');
 			interaction.reply({ content: `Successfully reset <@${user}>'s score to 0.`, ephemeral: true });
