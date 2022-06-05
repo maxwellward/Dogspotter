@@ -12,7 +12,11 @@ module.exports = {
 
 function checkIfValid(message) {
 	if (message.attachments.size == 0 && message.author.id != process.env.CLIENT_ID) {
-		message.delete();
+		try {
+			message.delete();
+		} catch (e) {
+			console.log(e);
+		}
 		return false;
 	}
 	return true;
