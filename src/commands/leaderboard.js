@@ -1,16 +1,12 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const {
-	query, orderBy, limit, collection, getDocs, doc, getDoc,
-} = require('firebase/firestore');
+const { query, orderBy, limit, collection, getDocs, doc, getDoc } = require('firebase/firestore');
 const { db } = require('../util/initFirebase');
 const client = require('../client');
 const { getOrdinalNum, getMonthWord } = require('../util/date');
 
 module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('leaderboard')
-		.setDescription('See the top dogspotters of all time.'),
+	data: new SlashCommandBuilder().setName('leaderboard').setDescription('See the top dogspotters of all time.'),
 
 	async execute(interaction) {
 		calculateLeaderboard(interaction);
@@ -27,6 +23,7 @@ async function calculateLeaderboard(interaction) {
 		topUsers.push({
 			id: document.id,
 			points: document.data().points,
+			username: document.data().username,
 		});
 	});
 
@@ -41,7 +38,9 @@ const getRequesterPoints = (interaction, topUsers) => {
 		});
 	}).then((score) => {
 		let plural = 'points';
-		if (score == 1) { plural = 'point'; }
+		if (score == 1) {
+			plural = 'point';
+		}
 		const requesterPoints = `You have ${score} ${plural}.`;
 		buildEmbed(interaction, topUsers, requesterPoints);
 	});
@@ -53,14 +52,12 @@ function buildEmbed(interaction, topUsers, requesterPoints) {
 
 	const embed = new MessageEmbed()
 		.setTitle('Top Dogspotters')
-		.setDescription('Who\'s seen the most good doggos?')
+		.setDescription("Who's seen the most good doggos?")
 		.setFooter({ text: friendlyDate + '. ' + requesterPoints });
 
 	new Promise((resolve) => {
-		topUsers.forEach(user => {
-			client.users.fetch(user.id).then((userObject) => {
-				embed.addField(`${userObject.username}#${userObject.discriminator}`, (user.points).toString());
-			});
+		topUsers.forEach((user) => {
+			embed.addField(`${user.username}`, user.points.toString());
 		});
 		resolve();
 	}).then(() => {
