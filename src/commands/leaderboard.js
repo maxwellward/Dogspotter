@@ -34,7 +34,11 @@ const getRequesterPoints = (interaction, topUsers) => {
 	const docRef = doc(db, 'users', interaction.user.id);
 	new Promise((resolve) => {
 		getDoc(docRef).then((document) => {
-			resolve(document.data().points);
+			if (document.data() == undefined) {
+				resolve(0);
+			} else {
+				resolve(document.data().points);
+			}
 		});
 	}).then((score) => {
 		let plural = 'points';
