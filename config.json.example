@@ -1,0 +1,22 @@
+{
+    "DOGSPOTTER_CHANNEL": {
+        "label": "Spotted Doggos Channel",
+        "style": "SHORT",
+        "value": "123456789123456789"
+    },
+    "NEW_USER_ROLE": {
+        "label": "Autorole ID",
+        "style": "SHORT",
+        "value": "123456789123456789"
+    },
+    "POINT_MULTIPLIER": {
+        "label": "Active Multiplier",
+        "style": "SHORT",
+        "value": "1"
+    },
+    "ISSUE_CHANNEL": {
+        "label": "Channel to send submitted issues to.",
+        "style": "SHORT",
+        "value": "123456789123456789"
+    }
+}
