@@ -12,7 +12,8 @@ module.exports = {
 	async execute(interaction) {
 		if (verifyNameMatch(interaction)) {
 			resetScore(interaction);
-		} else {
+		}
+		else {
 			interaction.reply({ content: 'The two users provided do not match! Please try again.', ephemeral: true });
 		}
 	},
@@ -26,11 +27,11 @@ function verifyNameMatch(interaction) {
 function resetScore(interaction) {
 	const options = interaction.options._hoistedOptions[0];
 	const user = options.user.id;
-	const name = options.user.username + '#' + options.user.discriminator;
+	const name = options.user.username;
 	const docRef = doc(db, 'users', user);
-	setDoc(docRef, { points: 0, username: name }, { merge: true })
+	setDoc(docRef, { points: 0, username: name, id: user }, { merge: true })
 		.then(() => {
-			addScoreHistory(user, interaction.user.id, 'reset', 'N/A');
+			addScoreHistory(user, interaction.user.id, 'reset_manual', 'N/A');
 			interaction.reply({ content: `Successfully reset <@${user}>'s score to 0.`, ephemeral: true });
 		})
 		.catch((e) => {

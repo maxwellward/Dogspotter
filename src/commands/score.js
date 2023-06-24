@@ -16,17 +16,17 @@ module.exports = {
 			option.setName('modifier').setDescription('Modifier to apply. Defaults to addition').setRequired(false).addChoices(
 				{
 					name: 'add',
-					value: 'add',
+					value: 'add_manual',
 				},
 				{
 					name: 'subtract',
-					value: 'subtract',
+					value: 'subtract_manual',
 				},
 				{
 					name: 'set',
-					value: 'set',
-				}
-			)
+					value: 'set_manual',
+				},
+			),
 		),
 	async execute(interaction) {
 		action = interaction;
@@ -35,23 +35,26 @@ module.exports = {
 };
 
 function applyUpdate(options) {
-	const name = options[0].user.username + '#' + options[0].user.discriminator;
+	const name = options[0].user.username;
 	const user = options[0].user.id;
 	let score = options[1].value;
 	let modifier;
 	try {
 		modifier = options[2].value;
-	} catch (error) {
-		modifier = 'add';
+	}
+	catch (error) {
+		modifier = 'add_manual';
 	}
 
-	if (modifier == 'subtract') {
+	if (modifier == 'subtract_manual') {
 		score = -Math.abs(score);
-	} else if (modifier == 'add') {
+	}
+	else if (modifier == 'add_manual') {
 		let multiplier = 1;
 		try {
 			multiplier = parseInt(POINT_MULTIPLIER.value);
-		} catch (error) {
+		}
+		catch (error) {
 			action.reply({ content: 'Could not parse point multiplier to a number. Please check the config.', ephemeral: true });
 			return;
 		}
@@ -62,28 +65,30 @@ function applyUpdate(options) {
 	setDoc(
 		docRef,
 		{
-			points: modifier == 'set' ? score : increment(score),
+			points: modifier == 'set_manual' ? score : increment(score),
 			username: name,
+			id: user,
 		},
-		{ merge: true }
+		{ merge: true },
 	)
 		.then(() => {
 			addScoreHistory(user, action.user.id, modifier, score);
 			const multiplier = Math.round(POINT_MULTIPLIER.value);
 			switch (modifier) {
-				case 'add':
-					if (multiplier != 1) {
-						action.reply(`Added ${score * multiplier} points to <@${user}>'s score (${multiplier}x point multiplier).`);
-					} else {
-						action.reply(`Added ${score} points to <@${user}>'s score.`);
-					}
-					break;
-				case 'subtract':
-					action.reply(`Subtracted ${Math.abs(score)} points from <@${user}>'s score.`);
-					break;
-				case 'set':
-					action.reply(`Set <@${user}>'s score to ${score}`);
-					break;
+			case 'add_manual':
+				if (multiplier != 1) {
+					action.reply(`Added ${score * multiplier} points to <@${user}>'s score (${multiplier}x point multiplier).`);
+				}
+				else {
+					action.reply(`Added ${score} points to <@${user}>'s score.`);
+				}
+				break;
+			case 'subtract_manual':
+				action.reply(`Subtracted ${Math.abs(score)} points from <@${user}>'s score.`);
+				break;
+			case 'set_manual':
+				action.reply(`Set <@${user}>'s score to ${score}`);
+				break;
 			}
 		})
 		.catch((e) => {
