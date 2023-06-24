@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const { query, orderBy, limit, collection, getDocs, doc, getDoc } = require('firebase/firestore');
 const { db } = require('../util/initFirebase');
-const client = require('../client');
 const { getOrdinalNum, getMonthWord } = require('../util/date');
 
 module.exports = {
@@ -36,7 +35,8 @@ const getRequesterPoints = (interaction, topUsers) => {
 		getDoc(docRef).then((document) => {
 			if (document.data() == undefined) {
 				resolve(0);
-			} else {
+			}
+			else {
 				resolve(document.data().points);
 			}
 		});
@@ -56,7 +56,7 @@ function buildEmbed(interaction, topUsers, requesterPoints) {
 
 	const embed = new MessageEmbed()
 		.setTitle('Top Dogspotters')
-		.setDescription("Who's seen the most good doggos?")
+		.setDescription('Who\'s seen the most good doggos?')
 		.setFooter({ text: friendlyDate + '. ' + requesterPoints });
 
 	new Promise((resolve) => {

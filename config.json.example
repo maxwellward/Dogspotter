@@ -4,6 +4,11 @@
         "style": "SHORT",
         "value": "123456789123456789"
     },
+    "LEADERBOARD_CHANNEL": {
+        "label": "Leaderboard Channel",
+        "style": "SHORT",
+        "value": "123456789123456789"
+    },
     "NEW_USER_ROLE": {
         "label": "Autorole ID",
         "style": "SHORT",

@@ -1,6 +1,7 @@
 const {
 	doc, updateDoc, arrayUnion,
 } = require('firebase/firestore');
+const { updateLeaderboard } = require('../misc/leaderboard');
 
 const { db } = require('../util/initFirebase');
 
@@ -15,9 +16,14 @@ function addScoreistory(user, issuer, action, scoreChange) {
 			scoreChange,
 		}),
 	})
+		.then(() => {
+			updateLeaderboard();
+		})
 		.catch((e) => {
 			console.error(e);
 		});
+
+
 }
 
 exports.addScoreHistory = addScoreistory;

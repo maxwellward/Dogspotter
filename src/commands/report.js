@@ -1,8 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Modal, TextInputComponent, MessageActionRow } = require('discord.js');
 
-let action;
-
 module.exports = {
 	data: new SlashCommandBuilder().setName('report').setDescription('Report an issue with the Dogspotter bot or server.'),
 	async execute(interaction) {
